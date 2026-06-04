@@ -1,22 +1,35 @@
-# pyeq3-ng — soft fork of pyeq3 for numpy 2.x compatibility
+# pyeq3-ng — superseded soft fork of pyeq3
 
-A soft fork of https://github.com/equations-project/pyeq3 maintained for
-downstream consumers (primarily zunzunsite3-ng) that need numpy 2.x.
-Upstream pins `numpy ^1.24` (which excludes 2.x); this fork relaxes that
-cap.
+> **Status: superseded — retained only as a fallback. Do not depend on this.**
+> Both changes this fork carried are now merged into upstream
+> [`equations-project/pyeq3`](https://github.com/equations-project/pyeq3), and the
+> downstream consumer (`zunzun-ng`) depends on upstream directly. New work belongs
+> upstream, not here.
 
-Other fork-local divergence from upstream:
+This was a soft fork of https://github.com/equations-project/pyeq3, created so a
+downstream consumer could use `pyeq3` on numpy 2.x before upstream supported it.
+Both reasons for the fork are now upstream:
 
-- Python `>=3.11` (upstream supports 3.8+).
-- `pypandoc` declared as a runtime dep — used by `pyeq3.Utilities.Multifit`
-  but missing from upstream's `pyproject.toml`.
-- PEP-440 local version identifier `+ng` so this fork coexists with
-  upstream `pyeq3` in pip resolution without name collisions.
-- Test infrastructure: `--strict` mode for `RunAllTests` (warnings → errors)
-  and a SyntaxWarning silencer in `Multifit.py`.
+- **`scipy.odr` → `odrpack`** — replaced the deprecated `scipy.odr` (slated for
+  removal in scipy 1.19) with `odrpack`, which wraps the same ODRPACK95 backend.
+  Merged upstream as PR #8 (2026-04-20).
+- **numpy 2.x + `pypandoc`** — relaxed upstream's stale `numpy` ceiling to allow
+  2.x and declared the `pypandoc` runtime dep that `pyeq3.Utilities.Multifit`
+  needs. Merged upstream as PR #9 (rev `ef97b62`).
 
-The original reason for the fork — replacing the deprecated `scipy.odr`
-with `odrpack` — is now in upstream as PR #8, merged 2026-04-20.
+What remains here is fork-local packaging/tooling that was never meant for
+upstream and is unnecessary now that the consumer points at upstream:
+
+- Uncapped `>=` dependency pins (upstream caps with caret / `<3`), a `python>=3.11`
+  floor, and the PEP-440 local version identifier `+ng`.
+- A `--strict` mode for `RunAllTests` (warnings → errors, plus a repo-wide sweep
+  for invalid escape sequences). This is the only fork-local code change with
+  independent value; it was deliberately not upstreamed.
+- `uv` scratch ignores in `.gitignore`.
+
+The fork is kept as an emergency fallback only: its `main` carries
+functionally-equivalent code under fork-local commit SHAs, so the consumer's
+upstream git-rev pin could be repointed here if that revision ever disappeared.
 
 ---
 
